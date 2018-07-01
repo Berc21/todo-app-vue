@@ -7,32 +7,23 @@
     <ul class="todo-list">
       <transition-group name="fade">
 
-
       <li @dblclick="showEdit(item)" class="todo-list-item" v-for="(item , id) in list" :key="id" @mouseover="showById = id" @mouseout="showById = null" >
 
         <input class="todo-done"  @click="selectShift(id, $event)" v-model="item.isDone" type="checkbox" >
-
-
-
         <div class="todo-text" v-if="item.isEditing">
                <input class="todo-edit" type="text" @keyup.enter="editTodo(item)"  @blur="editTodo(item)" @keyup.esc="cancelEdit(item)" v-model="item.text"  v-focus >
                <button class="todo-cancel-button" @click="cancelEdit(item)">Cancel</button>
-        </div  >
+        </div>
           <span class="todo-text" :class="{ 'is-done': item.isDone }" v-else>
                 {{ item.text }}
           </span>
-
-
           <span v-show="showById == id" @click="removeItem(id)" class="todo-list-delete">X</span>
-
         </li>
          </transition-group>
     </ul>
 
 
    <div class="todo-helpers-container">
-
-
     <div v-if="!isEmpty">
       <label v-if="allDone" >
          <input type="checkbox"  checked @change="unCheckAllList"> Uncheck all <br>
@@ -47,15 +38,9 @@
     <button class="todo-clear-done-button" v-show="showClearDone" @click="clearDone"> Clear Done</button>
 
   </transition>
-
-
     <p  class="todo-left" v-if="todoLeft > 0" >{{todoLeft}} Todo Left  </p>
     <p  class="todo-left" v-else > All is done - You're free! </p>
-
    </div>
-
-
-
 
   </div>
 </template>
@@ -147,42 +132,41 @@ export default {
       this.newTodoItem = "";
     },
     selectShift(id, event) {
-
-
       if (!event.target.checked) {
-         if (id == this.selectBetween.first ) {
-            this.selectBetween.first = null;
+        if (id == this.selectBetween.first) {
+          this.selectBetween.first = null;
 
-             return;
-         }
-           if (id == this.selectBetween.last ) {
-            this.selectBetween.last = null;
-         }
-
-      };
+          return;
+        }
+        if (id == this.selectBetween.last) {
+          this.selectBetween.last = null;
+        }
+      }
 
       if (this.inBetween) {
-
-        if (event.shiftKey && this.selectBetween.first != null ) {
+        if (event.shiftKey && this.selectBetween.first != null) {
           this.selectBetween.last = id;
 
           let selectedList;
 
-          if (this.selectBetween.first < this.selectBetween.last ) {
-             selectedList  = this.list.slice(this.selectBetween.first, this.selectBetween.last+1);
+          if (this.selectBetween.first < this.selectBetween.last) {
+            selectedList = this.list.slice(
+              this.selectBetween.first,
+              this.selectBetween.last + 1
+            );
 
-             this.list.map(item => item.isDone = false);
+            this.list.map(item => (item.isDone = false));
 
-             selectedList.map(item => item.isDone = true);
+            selectedList.map(item => (item.isDone = true));
           } else {
+            selectedList = this.list.slice(
+              this.selectBetween.last,
+              this.selectBetween.first + 1
+            );
 
-             selectedList = this.list.slice(this.selectBetween.last , this.selectBetween.first+1);
-
-             this.list.map(item => item.isDone = false);
-             selectedList.map(item => item.isDone = true);
+            this.list.map(item => (item.isDone = false));
+            selectedList.map(item => (item.isDone = true));
           }
-
-
         } else {
           this.selectBetween.first = id;
           this.inBetween = true;
@@ -222,12 +206,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style  lang="scss" scoped >
 .is-done {
   position: relative;
   display: inline-block;
-}
-.is-done::after {
+  &::after {
   background: rgba(0, 0, 0, 0.5);
   content: "";
   height: 0.125em;
@@ -235,6 +218,7 @@ export default {
   left: 0;
   position: absolute;
   top: 50%;
+}
 }
 
 .todo-container {
