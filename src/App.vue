@@ -48,8 +48,8 @@ input[type="checkbox"] {
   appearance: none;
   outline: 0;
   background: lightgray;
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
   border: 1px solid white;
 }
 

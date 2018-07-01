@@ -8,9 +8,9 @@
       <transition-group name="fade">
 
 
-      <li @dblclick="showEdit(item)" class="todo-list-item" v-for="(item , id) in list" :key="id">
+      <li @dblclick="showEdit(item)" class="todo-list-item" v-for="(item , id) in list" :key="id" @mouseover="showById = id" @mouseout="showById = null" >
 
-        <input class="todo-done"   v-model="item.isDone" type="checkbox" >
+        <input class="todo-done"  @click="selectShift(id, $event)" v-model="item.isDone" type="checkbox" >
 
 
 
@@ -23,9 +23,8 @@
           </span>
 
 
-        <div class="todo-list-item-right">
-          <span @click="removeItem(id)" class="todo-list-delete">X</span>
-        </div>
+          <span v-show="showById == id" @click="removeItem(id)" class="todo-list-delete">X</span>
+
         </li>
          </transition-group>
     </ul>
@@ -70,6 +69,12 @@ export default {
       newTodoItem: "",
       cachedItem: "",
       filter: "all",
+      showById: null,
+      selectBetween: {
+        first: null,
+        last: null
+      },
+      inBetween: false,
       list: [
         {
           id: 1,
@@ -141,6 +146,52 @@ export default {
 
       this.newTodoItem = "";
     },
+    selectShift(id, event) {
+
+
+      if (!event.target.checked) {
+         if (id == this.selectBetween.first ) {
+            this.selectBetween.first = null;
+
+             return;
+         }
+           if (id == this.selectBetween.last ) {
+            this.selectBetween.last = null;
+         }
+
+      };
+
+      if (this.inBetween) {
+
+        if (event.shiftKey && this.selectBetween.first != null ) {
+          this.selectBetween.last = id;
+
+          let selectedList;
+
+          if (this.selectBetween.first < this.selectBetween.last ) {
+             selectedList  = this.list.slice(this.selectBetween.first, this.selectBetween.last+1);
+
+             this.list.map(item => item.isDone = false);
+
+             selectedList.map(item => item.isDone = true);
+          } else {
+
+             selectedList = this.list.slice(this.selectBetween.last , this.selectBetween.first+1);
+
+             this.list.map(item => item.isDone = false);
+             selectedList.map(item => item.isDone = true);
+          }
+
+
+        } else {
+          this.selectBetween.first = id;
+          this.inBetween = true;
+        }
+      } else {
+        this.selectBetween.first = id;
+        this.inBetween = true;
+      }
+    },
     editTodo(item) {
       if (this.newTodoItem.trim().length == 0) item.title = this.cachedItem;
 
@@ -177,7 +228,7 @@ export default {
   display: inline-block;
 }
 .is-done::after {
-  background: black;
+  background: rgba(0, 0, 0, 0.5);
   content: "";
   height: 0.125em;
   right: 0;
@@ -211,6 +262,7 @@ export default {
 .todo-button {
   width: 100%;
   background-color: #67daff;
+  border-radius: 3px;
   font-weight: bold;
   border: none;
   max-width: 100px;
@@ -225,7 +277,10 @@ export default {
 
 .todo-clear-done-button {
   width: 100%;
-  background-color: #00e676;
+  background-color: #c62828;
+  border-radius: 3px;
+  color: #fff;
+  padding: 10px 0;
   font-weight: bold;
   border: none;
   max-width: 100px;
@@ -243,10 +298,15 @@ export default {
 
 .todo-list-item {
   padding: 20px;
-  background: #90a4ae;
+  background: #90a4ae5c;
   text-indent: 0;
   list-style-type: none;
   position: relative;
+}
+
+.todo-list-item:nth-child(even) {
+  background: #37474f;
+  color: #fff;
 }
 
 .todo-edit {
@@ -259,6 +319,8 @@ export default {
 .todo-cancel-button {
   background-color: #c62828;
   color: #fff;
+  padding: 5px 3px;
+  border-radius: 3px;
   border: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
@@ -267,14 +329,13 @@ export default {
   display: inline-block;
 }
 .todo-text {
+  margin-left: 10px;
   display: inline-block;
   cursor: pointer;
+
+  font-size: 20px;
 }
 
-.todo-list-item:nth-child(even) {
-  background: #37474f;
-  color: #fff;
-}
 .todo-list-delete {
   cursor: pointer;
   position: absolute;
