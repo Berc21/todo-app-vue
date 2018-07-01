@@ -177,7 +177,7 @@ export default {
       }
     },
     editTodo(item) {
-      if (this.newTodoItem.trim().length == 0) item.title = this.cachedItem;
+      if (item.text.trim().length == 0) item.text = this.cachedItem;
 
       item.isEditing = false;
     },
